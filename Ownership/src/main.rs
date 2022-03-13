@@ -11,6 +11,10 @@ fn main() {
 
     println!("Back here {}", back);
     // println!("Try print moved {}", movedString); Borrowed value
+
+    let number = 5;
+    teste_stack_value(number);
+    println!("Number not moved because has copy type, number: {}", number);
 }
 
 fn teste(dest: &mut String) {
@@ -25,3 +29,7 @@ fn teste2(dest: String) -> String {
     return dest;
 }
 
+fn teste_stack_value(number: u32) {
+    println!("Here the value too {}", number);
+
+}
