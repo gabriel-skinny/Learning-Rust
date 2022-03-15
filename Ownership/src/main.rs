@@ -15,6 +15,15 @@ fn main() {
     let number = 5;
     teste_stack_value(number);
     println!("Number not moved because has copy type, number: {}", number);
+    
+    let literal_string = "string";
+    teste_string_stack(&literal_string);
+    println!("Also access here {}", literal_string);
+}
+
+fn teste_string_stack(string: &str) {
+    println!("Copied here {}", string);
+
 }
 
 fn teste(dest: &mut String) {
