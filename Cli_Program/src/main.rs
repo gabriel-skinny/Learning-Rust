@@ -12,12 +12,15 @@ struct CLI {
     #[clap(parse(from_os_str))]
     path: std::path::PathBuf,
 }
-
+ 
+#[derive(Debug)]
+struct CustomError(String);
 
 fn main() -> std::io::Result<()> {
     let args = CLI::parse();
 
-    let file = File::open(&args.path)?;
+    let file = File::open(&args.path)
+        .map_err(|err| CustomError(format!("Error reading `{}", args.path, err)))?;
     let mut reader = BufReader::with_capacity(200, file);
 
     let mut line = String::new();
