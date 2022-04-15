@@ -33,7 +33,7 @@ impl Hashable for String {
 impl<T: PartialEq + Clone + Default + Debug + Display + Hashable, R: Clone + Default + Debug + Display + Hashable> HashMap<T, R> {
 
     fn new() -> Self {
-        const INITIAL_CAPACITY: usize = 10;
+        const INITIAL_CAPACITY: usize = 11;
         Self {
             map: vec![Map::default(); INITIAL_CAPACITY],
             size: INITIAL_CAPACITY 
@@ -41,13 +41,14 @@ impl<T: PartialEq + Clone + Default + Debug + Display + Hashable, R: Clone + Def
     }
 
     fn extend(&mut self) {
+        let new_capacity: usize = self.map.len() * 2 + 1;
         let mut new_map = Self {
-            map: vec![Map::default(); self.map.len() * 2 - 1],
-            size: self.map.len() * 2 - 1,
+            map: vec![Map::default(); new_capacity],
+            size: new_capacity,
         };
         
         for element in self.map.iter() {
-            let index_to_insert = element.key.hash() % self.size;
+            let index_to_insert = element.key.hash() % new_map.size;
             new_map.map.insert(index_to_insert, element.clone());
         }
 
@@ -75,25 +76,23 @@ impl<T: PartialEq + Clone + Default + Debug + Display + Hashable, R: Clone + Def
         self.map[hash_index].taken = true;
     }
     
-    fn get(&self, key: T) -> Option<&R> {
-       let mut hash_index = key.hash() % self.size; 
-       while self.map[hash_index].key != key && hash_index >= self.size{
-            hash_index += 1;
+    fn get(&self, key: &T) -> Option<&R> {
+       let mut hash_index = key.hash() % self.size;
+       while self.map[hash_index].key != *key && hash_index <= self.size {
+           hash_index += 1;
        }
 
-       if hash_index >= self.size && self.map[hash_index].key != key {
+       if hash_index <= self.size && self.map[hash_index].key != *key {
             return None;
        }
 
-       println!("Value aqui {}", &self.map[hash_index].key);
-       println!("Index aqui {}", &self.map[hash_index].value);
        Some(&self.map[hash_index].value)
     }
 
     fn debug(&self) {
         for element in &self.map {
            if element.taken {
-              println!("{} --> {}     index --> {}", element.key, element.value, element.key.hash() % self.size);
+              println!("{} --> {}", element.key, element.value);
            }else {
               println!("X");
            }
@@ -108,7 +107,7 @@ fn main() {
     
     my_hash.insert("to_change_value".to_string(), "First Value".to_string());    
     my_hash.insert("GetMeeBebe".to_string(), "Valor sou eu".to_string());
-    for i in 0..5 {
+    for i in 0..100 {
         let key = format!("Nome{}", i);
         my_hash.insert(key.to_string(), "Gabriel".to_string());    
     }
@@ -118,5 +117,5 @@ fn main() {
 
     println!("--------------------------");
 
-    println!("Get GetMeeBebe value {}", my_hash.get("GetMeeBebe".to_string()).unwrap());
+    println!("Get GetMeeBebe value {}", my_hash.get(&"GetMeeBebe".to_string()).unwrap());
 }
