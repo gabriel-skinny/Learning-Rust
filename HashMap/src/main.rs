@@ -56,14 +56,16 @@ impl<T: PartialEq + Clone + Default + Debug + Display + Hashable, R: Clone + Def
 
     fn insert(&mut self, key: T, value: R) {
         let mut hash_index = key.hash() % self.size;
-
-        if self.map[hash_index].taken && self.map[hash_index].key == key {
-            return
-        }
-
+        
         while self.map[hash_index].taken {
+            
+            if self.map[hash_index].key == key {
+                self.map[hash_index].value = value;
+                return;
+            }
+            
             hash_index+= 1;
-            if hash_index >= self.map.len() - 1{
+            if hash_index >= self.size - 1{
                 self.extend();
             }
         }
@@ -104,13 +106,14 @@ fn main() {
     let mut my_hash = HashMap::<String, String>::new();
     
     
-    my_hash.insert("Nome1".to_string(), "First Value".to_string());    
+    my_hash.insert("to_change_value".to_string(), "First Value".to_string());    
     my_hash.insert("GetMeeBebe".to_string(), "Valor sou eu".to_string());
     for i in 0..5 {
         let key = format!("Nome{}", i);
         my_hash.insert(key.to_string(), "Gabriel".to_string());    
     }
 
+    my_hash.insert("to_change_value".to_string(), "Last Value".to_string());    
     my_hash.debug();
 
     println!("--------------------------");
