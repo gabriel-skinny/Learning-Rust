@@ -72,11 +72,26 @@ impl<T: PartialEq + Clone + Default + Debug + Display + Hashable, R: Clone + Def
         self.map[hash_index].key = key;
         self.map[hash_index].taken = true;
     }
+    
+    fn get(&self, key: T) -> Option<&R> {
+       let mut hash_index = key.hash() % self.size; 
+       while self.map[hash_index].key != key && hash_index >= self.size{
+            hash_index += 1;
+       }
+
+       if hash_index >= self.size && self.map[hash_index].key != key {
+            return None;
+       }
+
+       println!("Value aqui {}", &self.map[hash_index].key);
+       println!("Index aqui {}", &self.map[hash_index].value);
+       Some(&self.map[hash_index].value)
+    }
 
     fn debug(&self) {
         for element in &self.map {
            if element.taken {
-              println!("{} --> {}", element.key, element.value);
+              println!("{} --> {}     index --> {}", element.key, element.value, element.key.hash() % self.size);
            }else {
               println!("X");
            }
@@ -90,10 +105,15 @@ fn main() {
     
     
     my_hash.insert("Nome1".to_string(), "First Value".to_string());    
-    for i in 0..20 {
+    my_hash.insert("GetMeeBebe".to_string(), "Valor sou eu".to_string());
+    for i in 0..5 {
         let key = format!("Nome{}", i);
         my_hash.insert(key.to_string(), "Gabriel".to_string());    
     }
 
     my_hash.debug();
+
+    println!("--------------------------");
+
+    println!("Get GetMeeBebe value {}", my_hash.get("GetMeeBebe".to_string()).unwrap());
 }
