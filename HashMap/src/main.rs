@@ -30,10 +30,11 @@ impl Hashable for String {
     }
 }
 
-impl<
-        T: PartialEq + Clone + Default + Debug + Display + Hashable,
-        R: Clone + Default + Debug + Display + Hashable,
-    > HashMap<T, R>
+impl<Key, Value> HashMap<Key, Value>
+    where  
+        Key: PartialEq + Clone + Default + Debug + Display + Hashable,
+        Value: Clone + Default + Debug + Display + Hashable,
+ 
 {
     fn new() -> Self {
         const INITIAL_CAPACITY: usize = 11;
@@ -57,7 +58,7 @@ impl<
         *self = new_map;
     }
 
-    fn insert(&mut self, key: T, value: R) {
+    fn insert(&mut self, key: Key, value: Value) {
         let mut hash_index = key.hash() % self.size;
         while self.map[hash_index].taken {
             if self.map[hash_index].key == key {
@@ -75,7 +76,7 @@ impl<
         self.map[hash_index].key = key;
         self.map[hash_index].taken = true;
     }
-    fn get(&self, key: &T) -> Option<&R> {
+    fn get(&self, key: &Key) -> Option<&Value> {
         let mut hash_index = key.hash() % self.size;
 
         println!("size: {}", self.size);
@@ -121,7 +122,7 @@ fn main() {
 
     my_hash.insert("to_change_value".to_string(), "First Value".to_string());
     my_hash.insert("GetMeeBebe".to_string(), "Valor sou eu".to_string());
-    for i in 0..50 {
+    for i in 0..20 {
         let key = format!("Nome{}", i);
         my_hash.insert(key.to_string(), "Gabriel".to_string());
     }
@@ -131,9 +132,9 @@ fn main() {
 
     println!("--------------------------");
 
-    let getReturn = my_hash.get(&"GetMeeBebe".to_string());
+    let get_return = my_hash.get(&"GetMeeBebe".to_string());
 
-    match getReturn {
+    match get_return {
         Some(value) => println!("Get GetMeeBebe value {}", value),
         None => println!("Not found!!"),
     }
