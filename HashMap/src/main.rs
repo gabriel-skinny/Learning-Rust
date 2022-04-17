@@ -76,15 +76,13 @@ impl<Key, Value> HashMap<Key, Value>
         self.map[hash_index].key = key;
         self.map[hash_index].taken = true;
     }
-    fn get(&self, key: &Key) -> Option<&Value> {
+
+
+    fn get_index(&self, key: &Key) -> Option<usize> {
         let mut hash_index = key.hash() % self.size;
-
-        println!("size: {}", self.size);
-        println!("index: {}", hash_index);
-        println!("value: {}", self.map[hash_index].key);
+        
         while self.map[hash_index].key != *key && hash_index <= self.size {
-            println!("Loop: {}", self.map[hash_index].key);
-
+            
             if !self.map[hash_index].taken {
                 return None;
             }
@@ -95,10 +93,31 @@ impl<Key, Value> HashMap<Key, Value>
         if hash_index <= self.size && self.map[hash_index].key != *key {
             return None;
         }
-        println!("before loop index: {}", hash_index);
-        Some(&self.map[hash_index].value)
+
+        Some(hash_index)
     }
 
+    fn get_mut(&mut self, key: &Key) -> Option<&mut Value> {
+        match self.get_index(key) {
+            Some(index) => {
+                Some(&mut self.map[index].value)
+            },
+            None => None
+        }
+
+    }
+ 
+
+    fn get(&self, key: &Key) -> Option<&Value> {
+        match self.get_index(key) {
+            Some(index) => {
+                Some(&self.map[index].value)
+            },
+            None => None
+        }
+
+    }
+    
     fn debug(&self) {
         println!("debug size: {}", self.size);
 
@@ -138,4 +157,15 @@ fn main() {
         Some(value) => println!("Get GetMeeBebe value {}", value),
         None => println!("Not found!!"),
     }
+
+    let mut get_mut_return = my_hash.get_mut(&"GetMeeBebe".to_string()).unwrap();
+
+    *get_mut_return = "Novo valor".to_string();
+
+    match my_hash.get(&"GetMeeBebe".to_string()) {
+        Some(value) => println!("Get GetMeeBebe value {}", value),
+        None => println!("Not found!!"),
+    }
+
+
 }
